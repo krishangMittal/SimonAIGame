@@ -1,0 +1,133 @@
+body {
+  text-align: center;
+  background-image: url('images/artificial-intelligence-7450797_1920-min.jpg'); /* Replace with your image path */
+  background-size: cover; /* Ensures the image covers the entire screen */
+  background-position: center; /* Centers the image */
+  background-attachment: fixed; /* Keeps the image fixed during scrolling */
+  color: white; /* Ensures text is visible */
+}
+
+#level-title {
+  font-family: 'Press Start 2P', cursive;
+  font-size: 3rem;
+  margin:  5%;
+  color: #FEF2BF;
+}
+
+.container {
+  display: block;
+  width: 50%;
+  margin: auto;
+
+}
+
+
+.btn {
+  margin: 25px;
+  display: inline-block;
+  height: 200px;
+  width: 200px;
+  border: 10px solid black;
+  border-radius: 20%;
+  overflow: hidden;
+  padding: 0;
+  position: relative;
+}
+
+.btn img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;  /* Changed back to cover */
+  border-radius: 0;   /* Removed border-radius from images */
+  display: block;
+  position: absolute;
+  top: 0;
+  left: 0;
+}
+
+
+.game-over {
+  background-color: red;
+  opacity: 0.8;
+}
+
+.red {
+  background-color: red;
+}
+
+
+.blue {
+  background-color: blue;
+}
+
+.yellow {
+  background-color: yellow;
+}
+
+.pressed {
+  box-shadow: 0 0 20px white;
+  background-color: grey;
+}
+
+
+.row :hover img {
+  box-shadow: 0 0 15px green;
+  transform: scale(1.05);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+
+/* Mute Button Styling */
+.mute-button {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  width: 50px;
+  height: 50px;
+  border: none;
+  background-color: #1a1a2e;
+  color: white;
+  font-size: 24px;
+  border-radius: 50%;
+  cursor: pointer;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  transition: transform 0.2s ease, background-color 0.2s ease;
+}
+
+/* Hover and Active State */
+.mute-button:hover {
+  background-color: #16213e;
+  transform: scale(1.1);
+}
+
+.mute-button:active {
+  transform: scale(0.9);
+}
+
+/* Animation for Mute State */
+.mute-button.muted {
+  background-color: #e63946; /* Red for muted state */
+  color: #fff;
+  transition: background-color 0.2s ease, transform 0.2s ease;
+}
+
+
+#splash-screen {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: black;
+  color: white;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-family: 'Press Start 2P', cursive;
+  font-size: 24px;
+  z-index: 9999;
+}
+
+#splash-screen h1 {
+  text-align: center;
+}

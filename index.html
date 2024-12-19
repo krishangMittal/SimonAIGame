@@ -1,0 +1,224 @@
+
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+
+<head>
+  <meta charset="utf-8">
+  <title>Simon</title>
+  <link rel="stylesheet" href="styles.css">
+  <link href="https://fonts.googleapis.com/css?family=Press+Start+2P" rel="stylesheet">
+  <script type="module">
+    // Import the functions you need from the SDKs
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/11.1.0/firebase-app.js";
+    import { getDatabase, ref, set, get, child, update, onValue } from "https://www.gstatic.com/firebasejs/11.1.0/firebase-database.js";
+
+    // Your Firebase Configuration
+    const firebaseConfig = {
+      apiKey: "AIzaSyBIJ76-zpaqMrPZrS7oWMpbSirLrVOollE",
+      authDomain: "simonaigame.firebaseapp.com",
+      databaseURL: "https://simonaigame-default-rtdb.firebaseio.com",
+      projectId: "simonaigame",
+      storageBucket: "simonaigame.firebasestorage.app",
+      messagingSenderId: "186103029128",
+      appId: "1:186103029128:web:71d0428cc992e06edc6e3d",
+      measurementId: "G-3EFBJBF5EJ"
+    };
+
+    try {
+      // Initialize Firebase and track total players
+      async function incrementTotalPlayers() {
+        try {
+          const totalPlayersRef = ref(database, 'totalPlayers');
+          const snapshot = await get(totalPlayersRef);
+          const currentTotal = snapshot.exists() ? snapshot.val() : 0;
+          await set(totalPlayersRef, currentTotal + 1);
+        } catch (error) {
+          console.error('Error updating total players:', error);
+        }
+      }
+
+      // Initialize Firebase
+      const app = initializeApp(firebaseConfig);
+      const database = getDatabase(app);
+
+      // Add real-time listeners for user count and total players
+      const totalPlayersRef = ref(database, 'totalPlayers');
+      onValue(totalPlayersRef, (snapshot) => {
+        const total = snapshot.val() || 0;
+        document.getElementById('total-players').textContent = `${total} brave souls have tried to save the world from AI`;
+      });
+      const userCountRef = ref(database, 'userCount');
+      onValue(userCountRef, (snapshot) => {
+        const count = snapshot.val() || 0;
+        console.log('Active users:', count);
+        document.getElementById('active-users').textContent = `Active Users: ${count}`;
+      });
+
+      // Increment User Count
+      async function incrementUserCount() {
+        try {
+          const dbRef = ref(database, 'userCount');
+          const snapshot = await get(dbRef);
+          if (snapshot.exists()) {
+            const currentCount = snapshot.val() || 0;
+            await set(dbRef, currentCount + 1);
+          } else {
+            await set(dbRef, 1);
+          }
+        } catch (error) {
+          console.error('Error updating user count:', error);
+        }
+      }
+
+      // Add cleanup on page unload
+      window.addEventListener('beforeunload', async () => {
+        const dbRef = ref(database, 'userCount');
+        const snapshot = await get(dbRef);
+        if (snapshot.exists()) {
+          const currentCount = snapshot.val();
+          if (currentCount > 0) {
+            await set(dbRef, currentCount - 1);
+          }
+        }
+      });
+
+      // Call incrementUserCount and incrementTotalPlayers when the game starts
+      document.addEventListener("DOMContentLoaded", () => {
+        incrementUserCount();
+        incrementTotalPlayers();
+      });
+    } catch (error) {
+      console.error('Error initializing Firebase:', error);
+    }
+  </script>
+ <!-- Audio handling script -->
+ <script>
+  let music;
+  let hasUserInteracted = false;
+  
+  function initializeAudio() {
+    // Create audio element programmatically
+    music = new Audio('sounds/722858__audiocoffee__futuristic-sci-fi-cinematic-loop1.wav');
+    music.loop = true;
+    music.volume = 0.7; // Set a comfortable default volume
+    
+    // Setup mute button
+    const muteButton = document.getElementById("mute-button");
+    
+    // Function to start music
+    function startMusic() {
+      if (!hasUserInteracted) {
+        hasUserInteracted = true;
+        music.play().catch(error => {
+          console.log('Audio playback failed:', error);
+          muteButton.textContent = "🔇";
+        });
+      }
+    }
+  
+    // Start music on various user interactions
+    document.addEventListener('click', startMusic, { once: true });
+    document.addEventListener('keypress', startMusic, { once: true });
+    
+    // Mute button functionality
+    muteButton.addEventListener("click", function (e) {
+  e.stopPropagation(); // Prevent triggering global click handlers
+
+  if (!hasUserInteracted) {
+    hasUserInteracted = true;
+  }
+
+  if (music.paused) {
+    music.play().catch((error) => {
+      console.log("Audio playback failed:", error);
+      muteButton.textContent = "🔇";
+    }).then(() => {
+      muteButton.textContent = "🔊";
+      muteButton.classList.remove("muted"); // Remove the muted class when playing
+    });
+  } else {
+    music.pause();
+    muteButton.textContent = "🔇";
+    muteButton.classList.add("muted"); // Add the muted class when paused
+  }
+});
+  
+    // Handle page visibility changes
+    document.addEventListener('visibilitychange', () => {
+      if (document.hidden) {
+        if (!music.paused) {
+          music.pause();
+          sessionStorage.setItem('wasPlaying', 'true');
+        }
+      } else {
+        if (hasUserInteracted && sessionStorage.getItem('wasPlaying') === 'true') {
+          music.play().catch(console.error);
+          sessionStorage.removeItem('wasPlaying');
+        }
+      }
+    });
+  
+    // Store audio state in session storage
+    window.addEventListener('beforeunload', () => {
+      sessionStorage.setItem('musicWasPlaying', !music.paused);
+    });
+  
+    // Restore audio state if page is refreshed
+    const musicWasPlaying = sessionStorage.getItem('musicWasPlaying') === 'true';
+    if (musicWasPlaying) {
+      hasUserInteracted = true;
+      // Don't autoplay, wait for user interaction
+      muteButton.textContent = "🔇";
+    }
+  }
+
+  // Initialize audio after DOM is loaded
+  document.addEventListener('DOMContentLoaded', initializeAudio);
+</script>
+</head>
+  
+  
+
+
+
+<body>
+  <button id="mute-button" class="mute-button" style="z-index: 1001;color: white;">🔇</button>
+
+  <div class="stats-banner" style="position: fixed; top: 0; left: 0; width: 100%; background-color: black; color: white; text-align: center; padding: 10px 0; z-index: 1000; font-family: 'Press Start 2P', cursive;">
+    <div id="active-users" style="margin-bottom: 5px;">Active Warriors: 0</div>
+    <div id="total-players" style="font-style: italic;">0 brave souls have tried to save the world from AI</div>
+  </div>
+
+  <div style="height: 80px;"></div> <!-- Spacer to prevent content from being hidden behind the banner -->
+  <div id="splash-screen">
+    <h1>The AI has taken over.<br>Humanity is doomed.</h1>
+  </div>
+
+  <h1 id="level-title" style="display: none;">Press A Key to Fight Back!</h1>
+  <div class="progress-bar" style="display: none;">
+    <div id="ai-progress" style="width: 0%;"></div>
+  </div>
+  <div class="container" style="display: none;">
+    <div class="row">
+      <div id="green" class="btn green">
+        <img src="images/ai-core-green.png" alt="AI Core">
+    </div>
+    <div id="red" class="btn red">
+        <img src="images/ai-alert-red.png" alt="AI Alert">
+    </div>
+    <div id="yellow" class="btn yellow">
+        <img src="images/ai-processing-yellow.png" alt="AI Processing">
+    </div>
+    <div id="blue" class="btn blue">
+        <img src="images/ai-surveillance-blue.png" alt="AI Surveillance">
+    </div>
+
+  
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.0/jquery.min.js"></script>
+  <script src = "game.js" ></script>
+
+
+
+</body>
+
+</html>
