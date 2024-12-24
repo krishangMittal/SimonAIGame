@@ -22,6 +22,27 @@ body {
 }
 
 
+/* Add these styles to your styles.css file */
+.leaderboard-button {
+  position: fixed;
+  top: 90px;
+  right: 20px;
+  padding: 10px 20px;
+  background: rgba(0, 255, 0, 0.2);
+  color: white;
+  text-decoration: none;
+  border-radius: 5px;
+  font-family: 'Press Start 2P', cursive;
+  transition: all 0.3s ease;
+  z-index: 1000;
+}
+
+.leaderboard-button:hover {
+  background: rgba(0, 255, 0, 0.4);
+  transform: scale(1.05);
+}
+
+
 .btn {
   margin: 25px;
   display: inline-block;
